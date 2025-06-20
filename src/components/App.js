@@ -5,6 +5,8 @@ import Loader from "./Loader";
 import Error from "./Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
+import NextButton from "./NextButton";
+import Progress from "./Progress";
 
 //initailState
 const initialState = {
@@ -35,6 +37,8 @@ function reducer(state, action) {
             ? state.points + question.points
             : state.points,
       };
+    case "newQuestion":
+      return { ...state, curIndex: state.curIndex + 1, answer: null };
     default:
       throw new Error("action unknown");
   }
@@ -42,11 +46,12 @@ function reducer(state, action) {
 
 function App() {
   // useReducer() hook, i'm distructuring the questions and status here  cuz that's the initial state
-  const [{ questions, status, curIndex, answer }, dispatch] = useReducer(
-    reducer,
-    initialState
-  );
+  const [{ questions, status, curIndex, answer, points }, dispatch] =
+    useReducer(reducer, initialState);
+  // total  number of questions
   const numQuestions = questions.length;
+  // maxpoints
+  const maxPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
   //   {
   //     /*using useEffect hook because i'm getting data on the mount(initial render)  */
   //   }
@@ -66,11 +71,21 @@ function App() {
           <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
         )}
         {status === "Active" && (
-          <Question
-            question={questions[curIndex]}
-            dispatch={dispatch}
-            answer={answer}
-          />
+          <>
+            <Progress
+              points={points}
+              numQuestions={numQuestions}
+              curIndex={curIndex}
+              maxPoints={maxPoints}
+              answer={answer}
+            />
+            <Question
+              question={questions[curIndex]}
+              dispatch={dispatch}
+              answer={answer}
+            />
+            <NextButton dispatch={dispatch} answer={answer} />
+          </>
         )}
       </Main>
     </div>
