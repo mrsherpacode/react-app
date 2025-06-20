@@ -7,6 +7,7 @@ import StartScreen from "./StartScreen";
 import Question from "./Question";
 import NextButton from "./NextButton";
 import Progress from "./Progress";
+import Finished from "./Finished";
 
 //initailState
 const initialState = {
@@ -16,6 +17,7 @@ const initialState = {
   curIndex: 0,
   answer: null,
   points: 0,
+  highScore: 0,
 };
 // reducer function
 
@@ -39,6 +41,13 @@ function reducer(state, action) {
       };
     case "newQuestion":
       return { ...state, curIndex: state.curIndex + 1, answer: null };
+    case "finished":
+      return {
+        ...state,
+        status: "finished",
+        highScore:
+          state.points > state.highScore ? state.points : state.highScore,
+      };
     default:
       throw new Error("action unknown");
   }
@@ -46,7 +55,7 @@ function reducer(state, action) {
 
 function App() {
   // useReducer() hook, i'm distructuring the questions and status here  cuz that's the initial state
-  const [{ questions, status, curIndex, answer, points }, dispatch] =
+  const [{ questions, status, curIndex, answer, points, highScore }, dispatch] =
     useReducer(reducer, initialState);
   // total  number of questions
   const numQuestions = questions.length;
@@ -84,8 +93,20 @@ function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NextButton dispatch={dispatch} answer={answer} />
+            <NextButton
+              dispatch={dispatch}
+              answer={answer}
+              curIndex={curIndex}
+              numQuestions={numQuestions}
+            />
           </>
+        )}
+        {status === "finished" && (
+          <Finished
+            points={points}
+            maxPoints={maxPoints}
+            highScore={highScore}
+          />
         )}
       </Main>
     </div>
