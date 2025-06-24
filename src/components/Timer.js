@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 
 function Timer({ dispatch, secondRemaining }) {
+  // calculating minute
   const mins = Math.floor(secondRemaining / 60);
+  // calculating second
   const sec = Math.floor(secondRemaining % 60);
 
   useEffect(
@@ -9,8 +11,7 @@ function Timer({ dispatch, secondRemaining }) {
       const id = setInterval(function () {
         dispatch({ type: "tick" });
       }, 1000);
-      //  this is a cleanout function
-
+      //  this is a cleanup function
       return () => clearInterval(id);
     },
     [dispatch]
